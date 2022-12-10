@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composeapp.ui.theme.ComposeAppTheme
 import com.example.composeapp.ui.theme.Neon
-import com.example.composeapp.ui.theme.ShadowGrey
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,9 +32,14 @@ class MainActivity : ComponentActivity() {
                 mutableStateOf(200.dp)
             }
 
+            /**
+             * Basic animation
+             * Tween is used to control basic properties in animation like duration, delay etc.
+             */
             val size by animateDpAsState(
                 targetValue = contentSize,
-                animationSpec = tween(delayMillis = 300,
+                animationSpec = tween(
+                    delayMillis = 300,
                     durationMillis = 3000,
                     easing = LinearOutSlowInEasing
                 )
@@ -53,7 +57,10 @@ class MainActivity : ComponentActivity() {
 
             ComposeAppTheme {
                 // A surface container using the 'background' color from the theme
-                messageBox("TEST MSG",size,color, updatePixels = {it
+                /**
+                 * State hoisting for updatePixels, making the method messageBox stateless
+                 */
+                MessageBox("TEST MSG",size,color, updatePixels = {
                     contentSize += it
                 })
 
@@ -63,7 +70,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun messageBox(text:String="HELLO",contentSize:Dp,color: Color,updatePixels : (Dp) -> Unit){
+fun MessageBox(text:String="HELLO",contentSize:Dp,color: Color,updatePixels : (Dp) -> Unit){
     Box(
         modifier = Modifier
             .size(contentSize)
