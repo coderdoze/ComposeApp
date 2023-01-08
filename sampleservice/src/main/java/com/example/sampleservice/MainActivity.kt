@@ -4,9 +4,15 @@ import android.app.job.JobInfo
 import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
+import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.sampleservice.databinding.ActivityMainBinding
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,10 +20,12 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.startButton.setOnClickListener {
-            scheduleJob()
+            //scheduleJob()
+            //useHandler()
+            useWorkerThread()
         }
         binding.stopButton.setOnClickListener {
-            cancelJob()
+            //cancelJob()
         }
     }
 
@@ -42,6 +50,43 @@ class MainActivity : AppCompatActivity() {
         val jobScheduler = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
         jobScheduler.cancel(jobID)
         Log.d(TAG, "Job cancelled")
+    }
+
+    private fun useHandler(){
+        val handlerThread = HandlerThread("myHandlerThread")
+        handlerThread.start()
+        val handler = Handler(handlerThread.looper)
+        val runnable = Runnable {
+            for(i in 1..3){
+                Log.d(TAG, "useHandler: $i")
+                SystemClock.sleep(2000)
+                this.runOnUiThread {
+                    Toast.makeText(applicationContext,"MSG : $i",Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        handler.post(runnable)
+    }
+
+    private fun useWorkerThread(){
+       // thread {
+            if (Looper.myLooper() == null)
+                Looper.prepare()
+            val handler = Handler(Looper.myLooper()!!)
+            val runnable = Runnable {
+                for (i in 1..4) {
+                    Log.d(TAG, "useHandler: ${2 * i}")
+                    Toast.makeText(applicationContext, "MSG : ${2*i}", Toast.LENGTH_SHORT).show()
+
+                    SystemClock.sleep(2000)
+                    //this.runOnUiThread {
+                    //}
+                }
+            }
+            handler.post(runnable)
+            Looper.loop()
+
+      //  }
     }
 
     companion object{

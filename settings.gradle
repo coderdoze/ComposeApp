@@ -15,3 +15,7 @@ dependencyResolutionManagement {
 rootProject.name = "ComposeApp"
 include ':app'
 include ':sampleservice'
+include ':foregroundservice'
+include ':broadcastreciever'
+include ':examplebroadcastreciever'
+include ':broadcastsenderapp'
